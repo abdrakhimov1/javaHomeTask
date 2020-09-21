@@ -2,9 +2,9 @@ package tests;
 
 import main.Customer;
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class TestCustomer {
@@ -16,12 +16,13 @@ public class TestCustomer {
 
     @Test
     public void checkOpenAccount() {
-        assert customer.openAccount(testAccountId);
+
+        assertTrue(customer.openAccount(testAccountId));
     }
 
     @Test
     public void checkCloseAccount() {
-        assert !customer.closeAccount();
+        assertFalse(customer.closeAccount());
     }
 
     @Test
@@ -31,24 +32,15 @@ public class TestCustomer {
 
     @Test
     public void checkWithdrawFromCurrentAccount() {
-        assert !customer.withdrawFromCurrentAccount(10);
+        assertFalse(customer.withdrawFromCurrentAccount(10));
     }
 
     @Test
     public void checkAddFromCurrentAccount() {
-        assert customer.addMoneyToCurrentAccount(10);
-    }
-
-
-    public static void main(String[] args ){
-
-        TestCustomer testCustomer = new TestCustomer();
-
-        testCustomer.checkCloseAccount();
-        testCustomer.checkFullName();
-        testCustomer.checkOpenAccount();
-        testCustomer.checkWithdrawFromCurrentAccount();
-        testCustomer.checkAddFromCurrentAccount();
+        customer.openAccount(testAccountId);
+        assertTrue(customer.addMoneyToCurrentAccount(10));
 
     }
+
+
 }
