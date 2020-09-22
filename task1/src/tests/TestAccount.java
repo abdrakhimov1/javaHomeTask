@@ -9,15 +9,17 @@ import static org.junit.Assert.assertTrue;
 public class TestAccount {
     private final long testId = 123456789;
 
-    Account testAccount = new Account(testId);
-
     @Test
-    public void checkAdd() {
-        assertTrue(testAccount.add(5000));
+    public void addsMoney_returnsTrue_whenAmountIsGreaterThanZero() {
+        Account testAccount = new Account(testId);
+        boolean isSuccess = testAccount.add(5000);
+        assertTrue(isSuccess);
     }
 
     @Test
-    public void checkWithdraw() {
-        assertFalse(testAccount.withdraw(3000));
+    public void withdrawMoney_returnsFalse_whenAmountIsLessThenNecessary() {
+        Account testAccount = new Account(testId);
+        boolean isNotSuccess =  testAccount.withdraw(3000);
+        assertFalse(isNotSuccess);
     }
 }

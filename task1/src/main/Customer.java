@@ -18,14 +18,11 @@ public class Customer {
      * @return true if account hasn't already created, otherwise returns false and prints "Customer fullName() already has the active account"
      */
     public boolean openAccount(long accountId) {
-
         if (this.account == null){
             this.account = new Account(accountId);
             return true;
         }
-
         System.out.println("Customer " + fullName() + " already has the active account");
-
         return false;
     }
 
@@ -39,11 +36,8 @@ public class Customer {
             this.account = null;
             return true;
         }
-
         System.out.println("Customer " + fullName() + " has no active account to close");
-
         return false;
-
     }
 
     /**
@@ -64,9 +58,7 @@ public class Customer {
             System.out.println("Customer " + fullName() + " has no active account");
             return false;
         }
-
         return account.withdraw(amount);
-
     }
 
     /**
@@ -75,12 +67,10 @@ public class Customer {
      * @return false if account is null and prints "Customer fullName() has no active account", otherwise returns the result of Account's add method
      */
     public boolean addMoneyToCurrentAccount(double amount) {
-
         if (this.account == null) {
             System.out.println("Customer " + fullName() + " has no active account");
             return false;
         }
         return account.add(amount);
-
     }
 }
