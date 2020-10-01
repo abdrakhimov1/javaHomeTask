@@ -12,7 +12,6 @@ public class TestCustomer {
     private final String testLastName = "LastName";
     private final long testAccountId = 1234567890;
 
-
     @Test
     public void openAccount_returnsTrue_WhenNewAccountCreated() {
         Customer customer = new Customer(testName, testLastName);

@@ -1,4 +1,4 @@
-package main;
+package task1;
 
 public class Account {
     private final long id;
