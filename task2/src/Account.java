@@ -17,6 +17,10 @@ public class Account {
         return entries;
     }
 
+    public long getId() {
+        return id;
+    }
+
     /**
      * Withdraws money from account. <b>Should use TransactionManager to manage transactions</b>
      *

@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AnalyticsManager {
     private final TransactionManager transactionManager;
@@ -8,8 +9,16 @@ public class AnalyticsManager {
         this.transactionManager = transactionManager;
     }
 
-    public Account mostFrequentBeneficiaryOfAccount(Account account) {
-        return new Account(13, transactionManager);
+    public Long mostFrequentBeneficiaryOfAccount(Account account) {
+        Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(account);
+        ArrayList<Long> sequence = new ArrayList<Long>();
+        for (Transaction transaction:allTransactions
+             ) {
+            sequence.add(transaction.getBeneficiary().getId());
+        }
+        Map<Long,Long> counts = sequence.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        Long mostFrequentId = counts.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+        return mostFrequentId;
     }
 
     public Collection<Transaction> topTenExpensivePurchases(Account account) {

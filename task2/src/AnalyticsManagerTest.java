@@ -6,6 +6,19 @@ class AnalyticsManagerTest {
 
     @Test
     void mostFrequentBeneficiaryOfAccount() {
+        TransactionManager transactionManager = new TransactionManager();
+        Account account1 = new Account(123, transactionManager);
+        Account account2 = new Account(124, transactionManager);
+        Account account3 = new Account(125, transactionManager);
+        AnalyticsManager analyticsManager = new AnalyticsManager(transactionManager);
+        account3.addCash(10000);
+        account1.addCash(10000);
+        Transaction transaction1 = transactionManager.createTransaction(100, account3,account1);
+        Transaction transaction2 = transactionManager.createTransaction(200, account3,account1);
+        Transaction transaction3 = transactionManager.createTransaction(300, account3,account2);
+        Transaction transaction4 = transactionManager.createTransaction(100, account3,account2);
+        Transaction transaction5 = transactionManager.createTransaction(500, account3,account2);
+        assertEquals(124, analyticsManager.mostFrequentBeneficiaryOfAccount(account3));
     }
 
     @Test
