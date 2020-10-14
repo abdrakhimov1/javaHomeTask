@@ -32,7 +32,7 @@ public class Transaction {
     public void execute() {
         this.executed = true;
         LocalDateTime time = LocalDateTime.now();
-        Entry entryOriginator = new Entry(this.originator,this, this.amount, time);
+        Entry entryOriginator = new Entry(this.originator,this, -this.amount, time);
         Entry entryBeneficiary = new Entry(this.beneficiary, this, this.amount, time);
         this.originator.getEntries().addEntry(entryOriginator);
         this.beneficiary.getEntries().addEntry(entryBeneficiary);
@@ -54,6 +54,11 @@ public class Transaction {
      * @throws IllegalStateException when was already rolled back
      */
     public void rollback() {
+        LocalDateTime time = LocalDateTime.now();
+        Entry entryOriginator = new Entry(this.beneficiary,this, -this.amount, time);
+        Entry entryBeneficiary = new Entry(this.originator, this, this.amount, time);
+        this.beneficiary.getEntries().addEntry(entryOriginator);
+        this.originator.getEntries().addEntry(entryBeneficiary);
         this.rolledBack = true;
     }
 

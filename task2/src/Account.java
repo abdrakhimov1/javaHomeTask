@@ -13,13 +13,14 @@ public class Account {
         this.entries = new Entries();
     }
 
+    public long getId() {
+        return id;
+    }
+
     public Entries getEntries() {
         return entries;
     }
 
-    public long getId() {
-        return id;
-    }
 
     /**
      * Withdraws money from account. <b>Should use TransactionManager to manage transactions</b>
@@ -48,16 +49,14 @@ public class Account {
      * otherwise returns false
      */
     public boolean withdrawCash(double amount) {
-        if (amount > 0 && balanceOn(LocalDateTime.now()) - amount > 0) {
-            TransactionManager transactionManager = new TransactionManager();
-            long cashID = -1;
+        if (balanceOn(LocalDateTime.now()) - amount > 0) {
+            long cashID = transactionManager.getNewId();
             Account cashAccount = new Account(cashID, transactionManager);
             Transaction transaction = transactionManager.createTransaction(amount, this, cashAccount);
-            transaction.cashExecution();
+            transaction.execute();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -70,15 +69,13 @@ public class Account {
      */
     public boolean addCash(double amount) {
         if (amount > 0) {
-            TransactionManager transactionManager = new TransactionManager();
-            long cashID = -1;
+            long cashID = transactionManager.getNewId();
             Account cashAccount = new Account(cashID, transactionManager);
             Transaction transaction = transactionManager.createTransaction(amount, cashAccount, this);
-            transaction.addCashExecution();
+            transaction.execute();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -94,7 +91,7 @@ public class Account {
     }
 
     public Collection<Entry> history(LocalDateTime from, LocalDateTime to) {
-            return entries.betweenDates(from, to);
+        return entries.betweenDates(from, to);
     }
 
     /**
@@ -105,17 +102,9 @@ public class Account {
 
     public double balanceOn(LocalDateTime date) {
         double balanceOnDate = 0;
-        System.out.println();
-        for (Entry entry:entries.onDate(date)){
-            if (entry.getAccount()==this) {
-                if(!entry.getTransaction().isRolledBack()) {
-                    if (entry.getTransaction().getBeneficiary() == this) {
-                        balanceOnDate += entry.getAmount();
-                    } else {
-                        balanceOnDate -= entry.getAmount();
-                    }
-                }
-
+        for (Entry entry : entries.onDate(date)){
+            if (entry.getAccount() == this) {
+                balanceOnDate += entry.getAmount();
             }
         }
         return balanceOnDate;
@@ -128,13 +117,3 @@ public class Account {
         entries.last().getTransaction().rollback();
     }
 }
-
-
-
-
-
-
-
-
-
-

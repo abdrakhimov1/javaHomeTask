@@ -4,28 +4,27 @@ import java.util.stream.Collectors;
 
 public class AnalyticsManager {
     private final TransactionManager transactionManager;
+    TreeMap<Double, List<Transaction>> tree = new TreeMap<Double, List<Transaction>>(Collections.reverseOrder());
+    ArrayList<Long> sequence = new ArrayList<Long>();
 
     public AnalyticsManager(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 
-    public Long mostFrequentBeneficiaryOfAccount(Account account) {
+    public Account mostFrequentBeneficiaryOfAccount(Account account) {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(account);
-        ArrayList<Long> sequence = new ArrayList<Long>();
-        for (Transaction transaction:allTransactions
-             ) {
+        for (Transaction transaction:allTransactions) {
             sequence.add(transaction.getBeneficiary().getId());
         }
         Map<Long,Long> counts = sequence.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
         Long mostFrequentId = counts.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
-        return mostFrequentId;
+        return transactionManager.findAccount(mostFrequentId);
     }
 
     public Collection<Transaction> topTenExpensivePurchases(Account account) {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(account);
-        TreeMap<Double, List<Transaction>> tree = new TreeMap<Double, List<Transaction>>(Collections.reverseOrder());
         for (Transaction transaction:allTransactions
-             ) {
+        ) {
             double amount = transaction.getAmount();
             if (tree.get(amount) == null){
                 List<Transaction> transactionList = new ArrayList<>();
@@ -37,9 +36,9 @@ public class AnalyticsManager {
         }
         Collection<Transaction> returnList = new ArrayList<>();
         for (List<Transaction> transactionList:tree.values()
-             ) {
+        ) {
             for (Transaction transaction:transactionList
-                 ) {
+            ) {
                 if(returnList.size() == 10) {
                     return returnList;
                 }

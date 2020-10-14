@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -32,7 +30,20 @@ public class TransactionManager {
         return transaction;
     }
 
+    public long getNewId(){
+        return acounter.incrementAndGet();
+    }
+
     public Collection<Transaction> findAllTransactionsByAccount(Account account) {
         return (Collection<Transaction>) transactionHashMap.get(account);
+    }
+
+    public Account findAccount(Long mostFrequentId) {
+        for (Account account : transactionHashMap.keySet()) {
+            if (account.getId() == mostFrequentId) {
+                return account;
+            }
+        }
+        return null;
     }
 }
