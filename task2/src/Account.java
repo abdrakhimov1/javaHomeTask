@@ -138,4 +138,8 @@ public class Account {
     public void rollbackLastTransaction() {
         entries.last().getTransaction().rollback();
     }
+
+    public void addEntry(Entry entry) {
+        entries.addEntry(entry);
+    }
 }

@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 
 public class Transaction {
-    private final long id;
+    private long id;
     private final double amount;
     private final Account originator;
     private final Account beneficiary;
@@ -17,6 +17,10 @@ public class Transaction {
         this.rolledBack = rolledBack;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public double getAmount() {
         return amount;
     }
@@ -29,20 +33,14 @@ public class Transaction {
      * Adding entries to both accounts
      * @throws IllegalStateException when was already executed
      */
-    public void execute() {
-        this.executed = true;
+    public Transaction execute() {
         LocalDateTime time = LocalDateTime.now();
         Entry entryOriginator = new Entry(this.originator,this, -this.amount, time);
         Entry entryBeneficiary = new Entry(this.beneficiary, this, this.amount, time);
-        this.originator.getEntries().addEntry(entryOriginator);
-        this.beneficiary.getEntries().addEntry(entryBeneficiary);
-    }
-
-    public void cashExecution() {
+        this.originator.addEntry(entryOriginator);
+        this.beneficiary.addEntry(entryBeneficiary);
         this.executed = true;
-        LocalDateTime time = LocalDateTime.now();
-        Entry entryOriginator = new Entry(this.originator, this, this.amount, time);
-        this.originator.getEntries().addEntry(entryOriginator);
+        return this;
     }
 
     public boolean isRolledBack() {
@@ -53,19 +51,13 @@ public class Transaction {
      * Removes all entries of current transaction from originator and beneficiary
      * @throws IllegalStateException when was already rolled back
      */
-    public void rollback() {
+    public Transaction rollback() {
         LocalDateTime time = LocalDateTime.now();
-        Entry entryOriginator = new Entry(this.beneficiary,this, -this.amount, time);
-        Entry entryBeneficiary = new Entry(this.originator, this, this.amount, time);
-        this.beneficiary.getEntries().addEntry(entryOriginator);
-        this.originator.getEntries().addEntry(entryBeneficiary);
-        this.rolledBack = true;
-    }
-
-    public void addCashExecution() {
-        this.executed = true;
-        LocalDateTime time = LocalDateTime.now();
-        Entry entryBeneficiary = new Entry(this.beneficiary, this, this.amount, time);
+        Entry entryOriginator = new Entry(this.originator,this, -this.amount, time);
+        Entry entryBeneficiary = new Entry(this.beneficiary, this, -this.amount, time);
+        this.originator.getEntries().addEntry(entryOriginator);
         this.beneficiary.getEntries().addEntry(entryBeneficiary);
+        this.rolledBack = true;
+        return this;
     }
 }

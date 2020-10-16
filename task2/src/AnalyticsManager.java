@@ -47,8 +47,6 @@ public class AnalyticsManager {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(account);
         for (Transaction transaction:allTransactions
         ) {
-            double amount = transaction.getAmount();
-
             if (transactionQueue.size() < 10) {
                 transactionQueue.add(transaction);
             } else {

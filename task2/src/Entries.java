@@ -1,67 +1,54 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 import java.util.*;
 
 /**
  * Collection of entries for the account. Use it to save and get history of payments
  */
 public class Entries implements EntriesFace{
-    
-    private int totalNumberOfEntries = 0;
 
-    void addEntry(Entry entry) {
-        entriesMap.put(entry.getTime(), totalNumberOfEntries);
-        entries.add(entry);
-        totalNumberOfEntries += 1;
+    Queue<Entry> entries;
+
+    public Entries() {
+        this.entries  = new ArrayDeque<>();
     }
 
-    Collection<Entry> from(LocalDate date) {
-        if (entriesMap.isEmpty()){
-            return (entries);
-        }
-        return (Collection<Entry>) entries.get(entriesMap.get(date));
+    void addEntry(Entry entry) {
+        entries.add(entry);
     }
 
     Collection<Entry> betweenDates(LocalDateTime from, LocalDateTime to) {
-        if (entriesMap.isEmpty()){
+        if (entries.isEmpty()){
             return (entries);
         }
-        TreeMap<LocalDateTime, Integer> tmpMap = new TreeMap<>(entriesMap);
-        int from1 = tmpMap.get(tmpMap.headMap(from, true).lastKey());
-        int to1 = tmpMap.get(tmpMap.headMap(to, true).lastKey());
-        return (Collection<Entry>) entries.subList(from1, to1+1);
-    }
-
-    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
-        return dateToConvert.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-    }
-
-    private LocalDateTime getDateNearest(List<Entry> entries, Date targetDate){
+        ArrayList<Entry> returnList = new ArrayList<>();
         for (Entry entry : entries) {
-            if (convertToDateViaSqlTimestamp(entry.getTime()).compareTo(targetDate) <= 0) return entry.getTime();
+            LocalDate todayDate = entry.getTime().toLocalDate();
+            if (!from.toLocalDate().isAfter(todayDate) && !to.toLocalDate().isBefore(todayDate)){
+                returnList.add(entry);
+            }
         }
-        return convertToLocalDateTimeViaInstant(targetDate);
-    }
-
-    public Date convertToDateViaSqlTimestamp(LocalDateTime dateToConvert) {
-        return java.sql.Timestamp.valueOf(dateToConvert);
+        return returnList;
     }
 
     Collection<Entry> onDate(LocalDateTime on) {
-        Date date1 = convertToDateViaSqlTimestamp(entries.get(0).getTime());
-        Date date2 = convertToDateViaSqlTimestamp(on);
-        if (entriesMap.isEmpty()){
+        if (entries.isEmpty()){
             return (entries);
         }
-        TreeMap<LocalDateTime, Integer> tmpMap = new TreeMap<>(entriesMap);
-        int tmp1 = tmpMap.get(tmpMap.headMap(on, true).lastKey());
-        return (Collection<Entry>) entries.subList(0, tmp1+1);
+        ArrayList<Entry> returnList = new ArrayList<>();
+        for (Entry entry : entries) {
+            LocalDate todayDate = entry.getTime().toLocalDate();
+            if (todayDate.isEqual(on.toLocalDate())){
+                returnList.add(entry);
+            }
+        }
+        return returnList;
     }
 
     Entry last() {
-        return entries.get(totalNumberOfEntries-1);
+        List tmpList = new ArrayList(entries);
+        Entry returnEntry = (Entry) tmpList.get(tmpList.size() - 1);
+        return returnEntry;
     }
 }
