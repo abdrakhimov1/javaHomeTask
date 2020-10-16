@@ -4,21 +4,43 @@ import java.util.stream.Collectors;
 
 public class AnalyticsManager {
     private final TransactionManager transactionManager;
-    TreeMap<Double, List<Transaction>> tree = new TreeMap<Double, List<Transaction>>(Collections.reverseOrder());
-    ArrayList<Long> sequence = new ArrayList<Long>();
+    Queue<Transaction> transactionQueue = new PriorityQueue<>(10, amountComparator);
+
 
     public AnalyticsManager(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 
+    public static Comparator<Transaction> amountComparator = new Comparator<Transaction>() {
+        @Override
+        public int compare(Transaction o1, Transaction o2) {
+            return (int) (o1.getAmount() - o2.getAmount());
+        }
+    };
+
     public Account mostFrequentBeneficiaryOfAccount(Account account) {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(account);
+        Map<Account, Integer> sequence = new HashMap<>();
+        int mostFreq = 0;
+        Account returnAccount = null; 
         for (Transaction transaction:allTransactions) {
-            sequence.add(transaction.getBeneficiary().getId());
+            Account benificary = transaction.getBeneficiary();
+            if (sequence.containsKey(benificary)){
+                int templateNumber = sequence.get(benificary);
+                sequence.replace(benificary, templateNumber, templateNumber + 1);
+                if (mostFreq < templateNumber + 1){
+                    mostFreq = templateNumber + 1;
+                    returnAccount = benificary;
+                }
+            } else {
+                sequence.put(benificary, 1);
+                if (mostFreq < 1) {
+                    mostFreq = 1;
+                    returnAccount = benificary;
+                }
+            }
         }
-        Map<Long,Long> counts = sequence.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-        Long mostFrequentId = counts.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
-        return transactionManager.findAccount(mostFrequentId);
+        return returnAccount;
     }
 
     public Collection<Transaction> topTenExpensivePurchases(Account account) {
@@ -26,25 +48,16 @@ public class AnalyticsManager {
         for (Transaction transaction:allTransactions
         ) {
             double amount = transaction.getAmount();
-            if (tree.get(amount) == null){
-                List<Transaction> transactionList = new ArrayList<>();
-                transactionList.add(transaction);
-                tree.put(amount, transactionList);
+
+            if (transactionQueue.size() < 10) {
+                transactionQueue.add(transaction);
             } else {
-                tree.get(amount).add(transaction);
-            }
-        }
-        Collection<Transaction> returnList = new ArrayList<>();
-        for (List<Transaction> transactionList:tree.values()
-        ) {
-            for (Transaction transaction:transactionList
-            ) {
-                if(returnList.size() == 10) {
-                    return returnList;
+                if (transactionQueue.peek().getAmount() < transaction.getAmount()){
+                    transactionQueue.poll();
+                    transactionQueue.add(transaction);
                 }
-                returnList.add(transaction);
             }
         }
-        return returnList;
+        return transactionQueue;
     }
 }

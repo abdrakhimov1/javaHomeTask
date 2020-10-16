@@ -6,9 +6,8 @@ import java.util.*;
 /**
  * Collection of entries for the account. Use it to save and get history of payments
  */
-public class Entries {
-    private final HashMap<LocalDateTime, Integer> entriesMap = new HashMap<>();
-    private final ArrayList<Entry> entries = new ArrayList<>();
+public class Entries implements EntriesFace{
+    
     private int totalNumberOfEntries = 0;
 
     void addEntry(Entry entry) {

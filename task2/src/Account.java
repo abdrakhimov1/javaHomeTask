@@ -110,6 +110,28 @@ public class Account {
         return balanceOnDate;
     }
 
+    @Override
+    public boolean equals(Object object){
+        if (this == object)
+            return true;
+        if (object == null)
+            return false;
+        if (getClass() != object.getClass())
+            return false;
+        Account otherAccount = (Account) object;
+        if (id != ((Account) object).id)
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) id;
+        return result;
+    }
+
     /**
      * Finds the last transaction of the account and rollbacks it
      */
