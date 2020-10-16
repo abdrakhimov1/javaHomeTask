@@ -1,4 +1,11 @@
+package test.java.packages;
+
+import main.java.packages.Account;
+import main.java.packages.AnalyticsManager;
+import main.java.packages.Transaction;
+import main.java.packages.TransactionManager;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +31,7 @@ class AnalyticsManagerTest {
     @Test
     void making_Transactions_From_Different_Accounts_Getting_Most_Frequent_Beneficiary_Of_Account() {
         prepearing_TransactionManager_And_Accounts();
-        assertEquals(account2, analyticsManager.mostFrequentBeneficiaryOfAccount(account3));
+        Assertions.assertEquals(account2, analyticsManager.mostFrequentBeneficiaryOfAccount(account3));
     }
 
     @Before
@@ -48,6 +55,6 @@ class AnalyticsManagerTest {
     @Test
     void getting_Top_Ten_Expensive_Purchases_Of_Account() {
         prepearing_Accounts_Before_Getting_Top_Ten_Expensive_Purchases_Of_Account_Test();
-        assertEquals(10, analyticsManager.topTenExpensivePurchases(account1).size());
+        Assertions.assertEquals(10, analyticsManager.topTenExpensivePurchases(account1).size());
     }
 }

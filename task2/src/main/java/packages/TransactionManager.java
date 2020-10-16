@@ -1,3 +1,5 @@
+package main.java.packages;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -10,7 +12,7 @@ public class TransactionManager implements TransactionManagerFace{
      * @param amount
      * @param originator
      * @param beneficiary
-     * @return created Transaction
+     * @return created main.java.packages.Transaction
      */
     private static final AtomicLong acounter = new AtomicLong(0);
 
@@ -18,15 +20,9 @@ public class TransactionManager implements TransactionManagerFace{
                                          Account originator,
                                          Account beneficiary) {
         Transaction transaction = new Transaction(acounter.incrementAndGet(), amount, originator, beneficiary,false, false);
-        if (transactionMap.get(originator) == null) {
-            ArrayList<Transaction> transactionArrayList = new ArrayList<>();
-            transactionArrayList.add(transaction);
-            transactionMap.put(originator, transactionArrayList);
-        } else {
-            ArrayList<Transaction> transactionArrayList = transactionMap.get(originator);
-            transactionArrayList.add(transaction);
-            transactionMap.replace(originator, transactionArrayList);
-        }
+//        это круто
+        transactionMap.computeIfPresent(originator, (key, value) -> returnFullTransactionList(value, transaction));
+        transactionMap.computeIfAbsent(originator, k -> returnTransactionList(transaction));
         return transaction;
     }
 
@@ -55,5 +51,16 @@ public class TransactionManager implements TransactionManagerFace{
             }
         }
         return null;
+    }
+
+    public ArrayList<Transaction> returnTransactionList(Transaction transaction) {
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        transactions.add(transaction);
+        return transactions;
+    }
+
+    public ArrayList<Transaction> returnFullTransactionList(ArrayList<Transaction> transactions, Transaction transaction) {
+        transactions.add(transaction);
+        return transactions;
     }
 }

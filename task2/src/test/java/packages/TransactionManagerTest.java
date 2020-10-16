@@ -1,7 +1,11 @@
-import org.junit.Before;
-import org.junit.jupiter.api.Test;
+package test.java.packages;
 
-import static org.junit.jupiter.api.Assertions.*;
+import main.java.packages.Account;
+import main.java.packages.Transaction;
+import main.java.packages.TransactionManager;
+import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class TransactionManagerTest {
 
@@ -21,6 +25,6 @@ class TransactionManagerTest {
         Transaction transaction3 = transactionManager.createTransaction(100, account1,account2);
         Transaction transaction4 = transactionManager.createTransaction(100, account1,account2);
         Transaction transaction5 = transactionManager.createTransaction(100, account2,account1);
-        assertEquals(4, transactionManager.findAllTransactionsByAccount(account1).size());
+        Assertions.assertEquals(4, transactionManager.findAllTransactionsByAccount(account1).size());
     }
 }

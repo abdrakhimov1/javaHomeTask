@@ -1,6 +1,7 @@
-import java.time.LocalDate;
+package main.java.packages;
+
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
 
 public class Account {
     private final long id;
@@ -23,7 +24,7 @@ public class Account {
 
 
     /**
-     * Withdraws money from account. <b>Should use TransactionManager to manage transactions</b>
+     * Withdraws money from account. <b>Should use main.java.packages.TransactionManager to manage transactions</b>
      *
      * @param amount amount of money to withdraw
      * @return true
@@ -41,7 +42,7 @@ public class Account {
     }
 
     /**
-     * Withdraws cash money from account. <b>Should use TransactionManager to manage transactions</b>
+     * Withdraws cash money from account. <b>Should use main.java.packages.TransactionManager to manage transactions</b>
      *
      * @param amount amount of money to withdraw
      * @return true
@@ -60,7 +61,7 @@ public class Account {
     }
 
     /**
-     * Adds cash money to account. <b>Should use TransactionManager to manage transactions</b>
+     * Adds cash money to account. <b>Should use main.java.packages.TransactionManager to manage transactions</b>
      *
      * @param amount amount of money to add
      * @return true
@@ -79,7 +80,7 @@ public class Account {
     }
 
     /**
-     * Adds money to account. <b>Should use TransactionManager to manage transactions</b>
+     * Adds money to account. <b>Should use main.java.packages.TransactionManager to manage transactions</b>
      *
      * @param amount amount of money to add
      * @return true
@@ -96,13 +97,14 @@ public class Account {
 
     /**
      * Calculates balance on the accounting entries basis
+     *
      * @param date
      * @return balance
      */
 
     public double balanceOn(LocalDateTime date) {
         double balanceOnDate = 0;
-        for (Entry entry : entries.onDate(date)){
+        for (Entry entry : entries.onDate(date)) {
             if (entry.getAccount() == this) {
                 balanceOnDate += entry.getAmount();
             }
@@ -111,7 +113,7 @@ public class Account {
     }
 
     @Override
-    public boolean equals(Object object){
+    public boolean equals(Object object) {
         if (this == object)
             return true;
         if (object == null)
@@ -119,9 +121,7 @@ public class Account {
         if (getClass() != object.getClass())
             return false;
         Account otherAccount = (Account) object;
-        if (id != ((Account) object).id)
-            return false;
-        return true;
+        return id == ((Account) object).id;
     }
 
     @Override
