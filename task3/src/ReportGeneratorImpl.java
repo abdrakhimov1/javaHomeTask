@@ -27,8 +27,7 @@ public class ReportGeneratorImpl<T> implements ReportGenerator<T> {
 
         for (T entry : entities) {
             int i = 0;
-            for (Field field: nameFields
-                 ) {
+            for (Field field: nameFields) {
                 field.setAccessible(true);
                 fieldValues.add(i, field.get(entry).toString());
                 i++;
