@@ -1,12 +1,13 @@
 package test.java.packages;
 
-import main.java.packages.DebitCard;
-import main.java.packages.AnalyticsManager;
-import main.java.packages.Transaction;
-import main.java.packages.TransactionManager;
+import main.java.packages.*;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 class AnalyticsManagerTest {
     TransactionManager transactionManager = new TransactionManager();
@@ -58,5 +59,16 @@ class AnalyticsManagerTest {
     void getting_Top_Ten_Expensive_Purchases_Of_Account() {
         prepearing_Accounts_Before_Getting_Top_Ten_Expensive_Purchases_Of_Account_Test();
         Assertions.assertEquals(10, analyticsManager.topTenExpensivePurchases(debitCard1).size());
+    }
+
+    @Test
+    void maxExpenseAmountEntryWithinInterval() {
+        prepearing_Accounts_Before_Getting_Top_Ten_Expensive_Purchases_Of_Account_Test();
+        List<Account> accounts = new ArrayList<>();
+        debitCard1.withdraw(500, debitCard2);
+        accounts.add(debitCard1);
+        accounts.add(debitCard2);
+        accounts.add(debitCard3);
+        Assertions.assertEquals(500, analyticsManager.maxExpenseAmountEntryWithinInterval(accounts, LocalDateTime.now().minusSeconds(2), LocalDateTime.now()).get().getTransaction().getAmount());
     }
 }

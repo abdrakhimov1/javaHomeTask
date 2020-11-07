@@ -1,6 +1,7 @@
 package main.java.packages;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 public class BonusAccount implements Account{
     private final TransactionManager transactionManager;
@@ -28,5 +29,10 @@ public class BonusAccount implements Account{
     public void addEntry(Entry entry) {
         entry.setAmount(entry.getAmount() * bonusPercent/100);
         entries.addEntry(entry);
+    }
+
+    @Override
+    public Collection<Entry> history(LocalDateTime from, LocalDateTime to) {
+        return entries.betweenDates(from, to);
     }
 }

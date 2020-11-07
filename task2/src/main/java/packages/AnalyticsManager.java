@@ -1,6 +1,10 @@
 package main.java.packages;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class AnalyticsManager {
     private final TransactionManager transactionManager;
@@ -18,53 +22,47 @@ public class AnalyticsManager {
         }
     };
 
+    public Optional<Entry> maxExpenseAmountEntryWithinInterval(List<Account> accounts, LocalDateTime from, LocalDateTime to){
+        Comparator<Entry> entryComparator = Comparator.comparing(Entry::getAmount);
+        return Optional.ofNullable(accounts
+                .stream()
+                .map(k -> k.history(from, to)
+                        .stream().filter(x -> x.getAmount() < 0)
+                        .collect(Collectors.toList())
+                        .stream()
+                        .max(entryComparator)).findFirst()
+                .stream()
+                .map(x -> x.stream().findFirst().orElse(null))
+                .max(entryComparator).orElse(null));
+    }
+
     public Account mostFrequentBeneficiaryOfAccount(DebitCard debitCard) {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(debitCard);
-        Map<Account, Integer> sequence = new HashMap<>();
-        int mostFreq = 0;
-        Account returnDebitCard = null;
-        for (Transaction transaction:allTransactions) {
-            Account benificary = transaction.getBeneficiary();
-            if (sequence.containsKey(benificary)){
-                int templateNumber = sequence.get(benificary);
-                sequence.replace(benificary, templateNumber, templateNumber + 1);
-                if (mostFreq < templateNumber + 1){
-                    mostFreq = templateNumber + 1;
-                    returnDebitCard = benificary;
-                }
-            } else {
-                sequence.put(benificary, 1);
-                if (mostFreq < 1) {
-                    mostFreq = 1;
-                    returnDebitCard = benificary;
-                }
-            }
-        }
-        return returnDebitCard;
+        return allTransactions
+                .stream()
+                .map(Transaction::getBeneficiary)
+                .collect(Collectors.groupingBy(e -> e, Collectors.counting()))
+                .entrySet()
+                .stream().max(Map.Entry.comparingByValue())
+                .get()
+                .getKey();
     }
 
     public Collection<Transaction> topTenExpensivePurchases(DebitCard debitCard) {
         Collection<Transaction> allTransactions = transactionManager.findAllTransactionsByAccount(debitCard);
-        for (Transaction transaction:allTransactions
-        ) {
-            if (transactionQueue.size() < 10) {
-                transactionQueue.add(transaction);
-            } else {
-                if (transactionQueue.peek().getAmount() < transaction.getAmount()){
-                    transactionQueue.poll();
-                    transactionQueue.add(transaction);
-                }
-            }
-        }
-        return transactionQueue;
+        Comparator<Transaction> comparator = Comparator.comparing(Transaction::getAmount);
+        return allTransactions
+                .stream()
+                .sorted(comparator)
+                .limit(10)
+                .collect(Collectors.toList());
     }
 
     public double overallBalanceOfAccounts(List<Account> accounts) {
-        double amount = 0;
-        for (Account account : accounts) {
-            amount += account.balanceOn(null);
-        }
-        return amount;
+        return accounts
+                .stream()
+                .mapToDouble(k -> k.balanceOn(null))
+                .sum();
     }
 
     public Set uniqueKeysOf(List accounts, KeyExtractor extractor) {
